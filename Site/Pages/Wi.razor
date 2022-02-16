@@ -31,10 +31,10 @@ else
     <tbody>
       @foreach (var item in workitems)
       {
-        <tr>
-          <th>@item.ID</th>
-          <th>@item.Title</th>
-          <th>@item.Description</th>
+        <tr key=@item.ID>
+          <td>@item.ID</td>
+          <td>@item.Title</td>
+          <td>@item.Description</td>
         </tr>
       }
     </tbody>
@@ -43,18 +43,20 @@ else
 
 
 @code {
-  List<Workitem>? workitems;
-  protected override async Task OnInitializedAsync()
-  {
-    workitems = await Task.Run(() => workitemservice.GetAllWorkitems());
-  }
+    List<Workitem>? workitems;
+    protected override async Task OnInitializedAsync()
+    {
+        workitems = await Task.Run(() => workitemservice.GetAllWorkitems());
+    }
 
-  Workitem workitem = new();
+    Workitem workitem = new();
 
-  protected async void CreateWorkitem() {
-    await workitemservice.InsertWorkitem(workitem);
-    workitem = new();
-    //NavigationManager.NavigateTo("/Wi");
-    await OnInitializedAsync();
+    protected async void CreateWorkitem() {
+        await workitemservice.InsertWorkitem(workitem);
+        workitem = new();
+
+        workitems = await Task.Run(() => workitemservice.GetAllWorkitems());
+        
+        StateHasChanged();
   }
 }

@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 using Site.Data.Model;
 
 namespace Site.Data;
@@ -16,11 +17,13 @@ public class WorkitemService
 
     public async Task<List<Workitem>> GetAllWorkitems(){
         _logger.LogInformation($"Called GetAllWorkitems");
-        return await _workitemContext.GetWorkitems();
+        return await _workitemContext.Workitem.ToListAsync();
     }
 
     public async Task<bool> InsertWorkitem(Workitem workitem){
         _logger.LogInformation($"Called InsertWorkitem #{workitem.ID} \"{workitem.Title}\"");
-        return await _workitemContext.InsertWorkitem(workitem);
+        await _workitemContext.Workitem.AddAsync(workitem);
+        await _workitemContext.SaveChangesAsync();
+        return true;
     }
 }

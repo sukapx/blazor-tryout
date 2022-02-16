@@ -7,27 +7,37 @@ using Site.Data.Model;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Logging.ClearProviders();
-builder.Logging.AddSimpleConsole();
+builder.Logging.AddSimpleConsole(opt =>
+{
+    opt.SingleLine = true;
+    opt.UseUtcTimestamp = true;
+});
 //builder.Logging.AddConsole();
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
-builder.Services.AddSingleton<WorkitemContext>();
 builder.Services.AddScoped<WorkitemService>();
-var app = builder.Build();
+//builder.Services.AddDbContextFactory<WorkitemContext>(opt =>
+//        opt.UseSqlite($"Data Source=database.db")
+//        .EnableSensitiveDataLogging());
 
+builder.Services.AddDbContextFactory<WorkitemContext>(opt =>
+    opt.UseInMemoryDatabase(Guid.NewGuid().ToString())
+    .EnableSensitiveDataLogging()
+);
+var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    System.Console.WriteLine("ENVIRONMENT DEVELOPMENT");
     app.UseExceptionHandler("/Error");
-}else{
-    System.Console.WriteLine("ENVIRONMENT PRODUCTIVE");
+    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseHsts();
 }
 
+app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 
