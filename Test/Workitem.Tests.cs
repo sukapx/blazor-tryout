@@ -48,11 +48,12 @@ public class CounterCSharpTests : BunitTestContext
 			Assert.False(workitems.Exists(x => x.ID == 123));
 
 			var cut = ctx.RenderComponent<Wi>();
+			cut.WaitForElement("form", TimeSpan.FromSeconds(1));
 
-			cut.Find("input[form=ID]").Change(123);
-			cut.Find("input[form=Title]").Change("Awesome Title");
-			cut.Find("input[form=Description]").Change("Awesome Description");
-			cut.Find("input[type=button]").Click();
+			cut.Find("input[id=ID]").Change(123);
+			cut.Find("input[id=Title]").Change("Awesome Title");
+			cut.Find("textarea[id=Description]").Change("Awesome Description");
+			cut.Find("button[type=submit]").Click();
 
 			cut.WaitForElements("tr[key=123]", TimeSpan.FromSeconds(2));
 		}
@@ -71,19 +72,20 @@ public class CounterCSharpTests : BunitTestContext
 			Assert.False(workitems.Exists(x => x.ID == 1003));
 
 			var cut = ctx.RenderComponent<Wi>();
-			cut.WaitForElement("input[form=ID]", TimeSpan.FromSeconds(1));
+			
+			cut.WaitForElement("form", TimeSpan.FromSeconds(1));
+			cut.Find("input[id=ID]").Change(1002);
+			cut.Find("input[id=Title]").Change("Awesome Title 1002");
+			cut.Find("textarea[id=Description]").Change("Awesome Description 1002");
+			cut.Find("button[type=submit]").Click();
+			cut.WaitForElement("tr[key=1002]", TimeSpan.FromSeconds(1));
 
-			cut.Find("input[form=ID]").Change(1002);
-			cut.Find("input[form=Title]").Change("Awesome Title 1002");
-			cut.Find("input[form=Description]").Change("Awesome Description 1002");
-			cut.Find("input[type=button]").Click();
-			cut.WaitForElement("tr[key=1002]", TimeSpan.FromSeconds(4));
-
-			cut.Find("input[form=ID]").Change(1003);
-			cut.Find("input[form=Title]").Change("Awesome Title 1003");
-			cut.Find("input[form=Description]").Change("Awesome Description 1003");
-			cut.Find("input[type=button]").Click();
-			cut.WaitForElement("tr[key=1002],tr[key=1003]", TimeSpan.FromSeconds(4));
+			cut.WaitForElement("form", TimeSpan.FromSeconds(1));
+			cut.Find("input[id=ID]").Change(1003);
+			cut.Find("input[id=Title]").Change("Awesome Title 1003");
+			cut.Find("textarea[id=Description]").Change("Awesome Description 1003");
+			cut.Find("button[type=submit]").Click();
+			cut.WaitForElement("tr[key=1002],tr[key=1003]", TimeSpan.FromSeconds(1));
 
 			var tr1002 = cut.Find("tr[key=1002]");
 			Assert.AreEqual(tr1002.InnerHtml, "<td>1002</td>\n          <td>Awesome Title 1002</td>\n          <td>Awesome Description 1002</td>");

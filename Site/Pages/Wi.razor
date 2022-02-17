@@ -6,12 +6,30 @@
 
 <PageTitle>Workitem</PageTitle>
 
-<form>
-  ID: <input form="ID" class="form-control" @bind="@workitem.ID" /> <br />
-  Title: <input form="Title" class="form-control" @bind="@workitem.Title" /> <br />
-  Description: <input form="Description" class="form-control" @bind="@workitem.Description" /> <br />
-  <input type="button" class="btn btn-primary" @onclick="@CreateWorkitem" value="Save"/>
-</form>
+<EditForm Model="@workitem" OnValidSubmit="@CreateWorkitem">
+  <DataAnnotationsValidator />
+  <ValidationSummary />
+
+  <p>
+    <label>
+      ID:
+      <InputNumber id="ID" class="form-control" @bind-Value="workitem.ID" />
+    </label>
+  </p>
+  <p>
+    <label>
+      Title:
+      <InputText id="Title" class="form-control" @bind-Value="workitem.Title" />
+    </label>
+  </p>
+  <p>
+    <label>
+      Description:
+      <InputTextArea id="Description" class="form-control" @bind-Value="workitem.Description" />
+    </label>
+  </p>
+  <button type="submit" class="btn btn-primary">Submit</button>
+</EditForm>
 
 <h1>Employee Info</h1>
 @if (workitems is null)
@@ -43,20 +61,34 @@ else
 
 
 @code {
-    List<Workitem>? workitems;
-    protected override async Task OnInitializedAsync()
-    {
-        workitems = await Task.Run(() => workitemservice.GetAllWorkitems());
-    }
+  private List<Workitem>? workitems;
+  private Workitem workitem = new(){
+    ID=1,
+    Title="",
+    Description="",
+    Creation=DateTime.UtcNow,
+    LastChange=DateTime.UtcNow
+  };
 
-    Workitem workitem = new();
+  protected override async Task OnInitializedAsync()
+  {
+    workitems = await Task.Run(() => workitemservice.GetAllWorkitems());
+  }
 
-    protected async void CreateWorkitem() {
-        await workitemservice.InsertWorkitem(workitem);
-        workitem = new();
+  protected async Task CreateWorkitem() {
+    workitem.Creation = DateTime.UtcNow;
+    workitem.LastChange = DateTime.UtcNow;
+    await workitemservice.InsertWorkitem(workitem);
+    workitem = new(){
+      ID=1,
+      Title="",
+      Description="",
+      Creation=DateTime.UtcNow,
+      LastChange=DateTime.UtcNow
+    };
 
-        workitems = await Task.Run(() => workitemservice.GetAllWorkitems());
-        
-        StateHasChanged();
+    workitems = await Task.Run(() => workitemservice.GetAllWorkitems());
+    
+    StateHasChanged();
   }
 }
