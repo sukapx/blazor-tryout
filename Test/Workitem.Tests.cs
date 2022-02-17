@@ -163,15 +163,13 @@ public class CounterCSharpTests : BunitTestContext
 
 
 	[Test]
-	[Timeout(4000)]
 	public async Task AddingWorkitems_BackEnd()
 	{
 		using (var ctx = GetContext())
 		{
 			var wIcontext = ctx.Services.GetService<WorkitemContext>();
 			var workitems = await wIcontext.Workitem.ToListAsync();
-			Assert.False(workitems.Exists(x => x.ID == 1002));
-			Assert.False(workitems.Exists(x => x.ID == 1003));
+			Assert.False(workitems.Exists(x => x.ID == 2002));
 
 			var dummy = new Workitem
 			{
@@ -190,6 +188,50 @@ public class CounterCSharpTests : BunitTestContext
 			Assert.AreEqual(workitem.Title, dummy.Title);
 			Assert.AreEqual(workitem.Description, dummy.Description);
 			Assert.AreEqual(workitem.Creation, dummy.Creation);
+		}
+	}
+
+	[Test]
+	public async Task AddingWorkitems_BackEnd_NoTitle()
+	{
+		using (var ctx = GetContext())
+		{
+			var wIcontext = ctx.Services.GetService<WorkitemContext>();
+			var workitems = await wIcontext.Workitem.ToListAsync();
+			Assert.False(workitems.Exists(x => x.ID == 2002));
+
+			var dummy = new Workitem
+			{
+				ID = 2002,
+				Description = "Description 2002",
+				Creation = DateTime.UtcNow,
+				LastChange = DateTime.UtcNow
+			};
+
+			var ex = Assert.ThrowsAsync<DbUpdateException>(async () => await ctx.Services.GetService<WorkitemService>().InsertWorkitem(dummy));
+			Assert.True(Regex.IsMatch(ex.Message, "Required properties '{'Title'}' are missing "));
+		}
+	}
+
+	[Test]
+	public async Task AddingWorkitems_BackEnd_NoDescription()
+	{
+		using (var ctx = GetContext())
+		{
+			var wIcontext = ctx.Services.GetService<WorkitemContext>();
+			var workitems = await wIcontext.Workitem.ToListAsync();
+			Assert.False(workitems.Exists(x => x.ID == 2002));
+
+			var dummy = new Workitem
+			{
+				ID = 2002,
+				Title = "Title 2002",
+				Creation = DateTime.UtcNow,
+				LastChange = DateTime.UtcNow
+			};
+
+			var ex = Assert.ThrowsAsync<DbUpdateException>(async () => await ctx.Services.GetService<WorkitemService>().InsertWorkitem(dummy));
+			Assert.True(Regex.IsMatch(ex.Message, "Required properties '{'Description'}' are missing "));
 		}
 	}
 }
