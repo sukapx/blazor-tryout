@@ -62,13 +62,7 @@ else
 
 @code {
   private List<Workitem>? workitems;
-  private Workitem workitem = new(){
-    ID=1,
-    Title="",
-    Description="",
-    Creation=DateTime.UtcNow,
-    LastChange=DateTime.UtcNow
-  };
+  private Workitem workitem = new();
 
   protected override async Task OnInitializedAsync()
   {
@@ -79,13 +73,7 @@ else
     workitem.Creation = DateTime.UtcNow;
     workitem.LastChange = DateTime.UtcNow;
     await workitemservice.InsertWorkitem(workitem);
-    workitem = new(){
-      ID=1,
-      Title="",
-      Description="",
-      Creation=DateTime.UtcNow,
-      LastChange=DateTime.UtcNow
-    };
+    workitem = new();
 
     workitems = await Task.Run(() => workitemservice.GetAllWorkitems());
     
