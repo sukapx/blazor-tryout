@@ -19,14 +19,13 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddScoped<WorkitemService>();
-//builder.Services.AddDbContextFactory<WorkitemContext>(opt =>
-//        opt.UseSqlite($"Data Source=database.db")
-//        .EnableSensitiveDataLogging());
-
 builder.Services.AddDbContextFactory<WorkitemContext>(opt =>
-    opt.UseInMemoryDatabase(Guid.NewGuid().ToString())
-    .EnableSensitiveDataLogging()
-);
+        opt.UseSqlite($"Data Source=database.db")
+        .EnableSensitiveDataLogging());
+
+//builder.Services.AddDbContextFactory<WorkitemContext>(opt =>
+//    opt.UseInMemoryDatabase(Guid.NewGuid().ToString())
+//    .EnableSensitiveDataLogging());
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
