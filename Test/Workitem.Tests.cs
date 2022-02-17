@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Bunit;
 using Microsoft.AspNetCore.Components.Web;
 using System;
+using System.Text.RegularExpressions;
 
 namespace Test;
 
@@ -56,6 +57,72 @@ public class CounterCSharpTests : BunitTestContext
 			cut.Find("button[type=submit]").Click();
 
 			cut.WaitForElements("tr[key=123]", TimeSpan.FromSeconds(2));
+		}
+	}
+
+	[Test]
+	public async Task AddingWorkitem_NoDescription()
+	{
+		using (var ctx = GetContext())
+		{
+			var wIcontext = ctx.Services.GetService<WorkitemContext>();
+			var workitems = await wIcontext.Workitem.ToListAsync();
+			Assert.False(workitems.Exists(x => x.ID == 123));
+
+			var cut = ctx.RenderComponent<Wi>();
+			cut.WaitForElement("form", TimeSpan.FromSeconds(1));
+
+			cut.Find("input[id=ID]").Change(123);
+			cut.Find("input[id=Title]").Change("Awesome Title");
+			cut.Find("button[type=submit]").Click();
+
+			cut.WaitForElement(".validation-errors", TimeSpan.FromSeconds(1));
+			var valiMessage = cut.Find("ul[class=validation-errors]");
+			Assert.True(Regex.IsMatch(valiMessage.TextContent, @"The Description field is required"));
+		}
+	}
+
+	[Test]
+	public async Task AddingWorkitem_NoTitle()
+	{
+		using (var ctx = GetContext())
+		{
+			var wIcontext = ctx.Services.GetService<WorkitemContext>();
+			var workitems = await wIcontext.Workitem.ToListAsync();
+			Assert.False(workitems.Exists(x => x.ID == 123));
+
+			var cut = ctx.RenderComponent<Wi>();
+			cut.WaitForElement("form", TimeSpan.FromSeconds(1));
+
+			cut.Find("input[id=ID]").Change(123);
+			cut.Find("textarea[id=Description]").Change("Awesome Description 123");
+			cut.Find("button[type=submit]").Click();
+
+			cut.WaitForElement(".validation-errors", TimeSpan.FromSeconds(1));
+			var valiMessage = cut.Find("ul[class=validation-errors]");
+			Assert.True(Regex.IsMatch(valiMessage.TextContent, @"The Title field is required"));
+		}
+	}
+
+	[Test]
+	public async Task AddingWorkitem_NoTitle_NoDescription()
+	{
+		using (var ctx = GetContext())
+		{
+			var wIcontext = ctx.Services.GetService<WorkitemContext>();
+			var workitems = await wIcontext.Workitem.ToListAsync();
+			Assert.False(workitems.Exists(x => x.ID == 123));
+
+			var cut = ctx.RenderComponent<Wi>();
+			cut.WaitForElement("form", TimeSpan.FromSeconds(1));
+
+			cut.Find("input[id=ID]").Change(123);
+			cut.Find("button[type=submit]").Click();
+
+			cut.WaitForElement(".validation-errors", TimeSpan.FromSeconds(1));
+			var valiMessage = cut.Find("ul[class=validation-errors]");
+			Assert.True(Regex.IsMatch(valiMessage.TextContent, @"The Title field is required"));
+			Assert.True(Regex.IsMatch(valiMessage.TextContent, @"The Description field is required"));
 		}
 	}
 
