@@ -20,7 +20,7 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddScoped<WorkitemService>();
 builder.Services.AddDbContextFactory<WorkitemContext>(opt =>
-        opt.UseSqlite($"Data Source=database.db")
+        opt.UseSqlite($"Data Source=database.sqlite")
         .EnableSensitiveDataLogging());
 
 //builder.Services.AddDbContextFactory<WorkitemContext>(opt =>
