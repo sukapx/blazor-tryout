@@ -12,8 +12,8 @@
 
   <p>
     <label>
-      ID:
-      <InputNumber id="ID" class="form-control" @bind-Value="workitem.ID" />
+      Category:
+      <InputNumber id="Category" class="form-control" @bind-Value="workitem.Category" />
     </label>
   </p>
   <p>
@@ -31,52 +31,36 @@
   <button type="submit" class="btn btn-primary">Submit</button>
 </EditForm>
 
-<h1>Employee Info</h1>
-@if (workitems is null)
-{
-    <p><em>Loading... !</em></p>
-}
-else
-{
-  <table class="table">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Title</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      @foreach (var item in workitems)
-      {
-        <tr key=@item.ID>
-          <td>@item.ID</td>
-          <td>@item.Title</td>
-          <td>@item.Description</td>
-        </tr>
-      }
-    </tbody>
-  </table>
-}
-
+<h1>Workitems</h1>
+<div class="row">
+	<div class="col-md-4">
+    <WorkitemTable Category="All" workitems="@workitems"></WorkitemTable>
+  </div>
+	<div class="col-md-4">
+    <WorkitemTable Category="Cat1" workitems="@workitems2"></WorkitemTable>
+  </div>
+</div>
 
 @code {
-  private List<Workitem>? workitems;
-  private Workitem workitem = new();
 
-  protected override async Task OnInitializedAsync()
-  {
-    workitems = await Task.Run(() => workitemservice.GetAllWorkitems());
-  }
+    private List<Workitem>? workitems;
+    private List<Workitem>? workitems2;
+    private Workitem workitem = new();
 
-  protected async Task CreateWorkitem() {
-    workitem.Creation = DateTime.UtcNow;
-    workitem.LastChange = DateTime.UtcNow;
-    await workitemservice.InsertWorkitem(workitem);
-    workitem = new();
+    protected override async Task OnInitializedAsync()
+    {
+        workitems = await Task.Run(() => workitemservice.GetAllWorkitems());
+        workitems2 = await Task.Run(() => workitemservice.GetWorkitems(1));
+    }
 
-    workitems = await Task.Run(() => workitemservice.GetAllWorkitems());
-    
-    StateHasChanged();
+    protected async Task CreateWorkitem() {
+        workitem.Creation = DateTime.UtcNow;
+        workitem.LastChange = DateTime.UtcNow;
+        await workitemservice.InsertWorkitem(workitem);
+        workitem = new();
+
+        workitems = await Task.Run(() => workitemservice.GetAllWorkitems());
+        await OnInitializedAsync();
+        StateHasChanged();
   }
 }

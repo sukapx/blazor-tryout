@@ -1,0 +1,38 @@
+﻿@using Site.Data.Model
+
+<h3>@Category</h3>
+@if (workitems is null)
+{
+    <p><em>Loading... !</em></p>
+}
+else
+{
+  <table class="table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Title</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      @foreach (var item in workitems)
+      {
+        <tr key=@item.ID>
+          <td>@item.ID</td>
+          <td>@item.Title</td>
+          <td>@item.Description</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}
+
+@code {
+    [Parameter]
+    public string Category { get; set; } = "";
+
+    [Parameter]
+    public List<Workitem>? workitems { get; set; }
+
+}

@@ -20,6 +20,11 @@ public class WorkitemService
         return await _workitemContext.Workitem.ToListAsync();
     }
 
+    public async Task<List<Workitem>> GetWorkitems(int Category){
+        _logger.LogInformation($"Called GetAllWorkitems");
+        return await _workitemContext.Workitem.Where(e => e.Category == Category).ToListAsync();
+    }
+
     public async Task<bool> InsertWorkitem(Workitem workitem){
         _logger.LogInformation($"Called InsertWorkitem #{workitem.ID} \"{workitem.Title}\"");
         await _workitemContext.Workitem.AddAsync(workitem);
